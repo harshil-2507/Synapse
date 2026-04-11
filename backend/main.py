@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
 from data_loader import load_walmart, load_uploaded
-from forecaster import run_forecast
+from forecaster import run_forecast, compute_confidence 
 from anomaly import detect_anomalies
 from scenarios import run_scenario
 from explainer import explain_forecast, explain_anomaly
@@ -29,7 +29,8 @@ def default_forecast(periods: int = Query(8, ge=1, le=26)):
     forecast = run_forecast(df, periods)
     anomalies = detect_anomalies(df)
     summary = explain_forecast(forecast["trend"], periods, anomalies)
-    return {"forecast": forecast, "anomalies": anomalies, "summary": summary}
+    confidence = compute_confidence(df, forecast)
+    return {"forecast": forecast, "anomalies": anomalies, "summary": summary, "confidence": confidence}
 
 @app.post("/api/upload")
 async def upload_forecast(file: UploadFile = File(...), periods: int = Query(8)):
@@ -39,7 +40,8 @@ async def upload_forecast(file: UploadFile = File(...), periods: int = Query(8))
         forecast = run_forecast(df, periods)
         anomalies = detect_anomalies(df)
         summary = explain_forecast(forecast["trend"], periods, anomalies)
-        return {"forecast": forecast, "anomalies": anomalies, "summary": summary}
+        confidence = compute_confidence(df, forecast)
+        return {"forecast": forecast, "anomalies": anomalies, "summary": summary, "confidence": confidence}
     except ValueError as e:
         from fastapi import HTTPException
         raise HTTPException(status_code=400, detail=str(e))

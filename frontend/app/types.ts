@@ -21,3 +21,18 @@ export interface ForecastResponse {
   anomalies: Anomaly[];
   summary: string;
 }
+
+export interface Confidence {
+  score: number;
+  label: "High" | "Medium" | "Low";
+  color: string;
+  bg: string;
+  reason: string;
+}
+
+export interface ForecastResponse {
+  forecast: { forecast: ForecastPoint[]; trend: number; periods: number };
+  anomalies: Anomaly[];
+  summary: string;
+  confidence: Confidence;
+}

@@ -7,6 +7,7 @@ import AnomalyList from "./components/AnomalyList";
 import ScenarioPanel from "./components/ScenarioPanel";
 import SummaryCard from "./components/SummaryCard";
 import StatsRow from "./components/StatsRow";
+import ConfidenceCard from "./components/ConfidenceCard";
 
 const API = "http://localhost:8000";
 
@@ -154,8 +155,8 @@ export default function Dashboard() {
       {data && !loading && (
         <>
           {data.summary && <SummaryCard summary={data.summary} />}
+          {data.confidence && <ConfidenceCard confidence={data.confidence} />}
           <StatsRow data={data} />
-
           <div>
             <div className="flex gap-1 bg-white border border-purple-100 rounded-xl p-1 w-fit">
               {(["forecast","anomalies","scenario"] as const).map(tab => (
