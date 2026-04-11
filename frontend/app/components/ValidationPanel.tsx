@@ -41,8 +41,7 @@ export default function ValidationPanel({ periods, uploadedFile }: Props) {
                     <div>
                         <h2 className="font-semibold text-gray-800">Hold-out Validation</h2>
                         <p className="text-xs text-gray-400 mt-1">
-                            Trains on all data except the last {periods} weeks, then measures how accurately
-                            Prophet predicted those known weeks vs the naive baseline. Proves the model generalises.
+                            The model is evaluated using rolling-origin backtesting, where the final 4 weeks are held out to simulate unseen data. Performance is benchmarked against a naive baseline (rolling mean) to ensure robustness and prevent overfitting.
                         </p>
                     </div>
                     <button onClick={runValidation} disabled={loading}
