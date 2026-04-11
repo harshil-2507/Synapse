@@ -86,3 +86,62 @@ def compute_confidence(df: pd.DataFrame, forecast: dict) -> dict:
     )
 
     return {"score": score, "label": label, "color": color, "bg": bg, "reason": reason}
+
+def run_holdout_validation(df: pd.DataFrame, holdout_weeks: int = 8) -> dict:
+    """
+    Hold out the last N weeks, train on the rest, 
+    predict the holdout period, compare Prophet vs naive baseline.
+    """
+    if len(df) < holdout_weeks + 20:
+        return {"available": False, "reason": "Not enough data for validation"}
+
+    train = df.iloc[:-holdout_weeks].copy()
+    actual = df.iloc[-holdout_weeks:].copy()
+
+    # Train Prophet on history only
+    m = Prophet(interval_width=0.80, yearly_seasonality=True, weekly_seasonality=False)
+    m.fit(train)
+    future = m.make_future_dataframe(periods=holdout_weeks, freq='W')
+    forecast = m.predict(future)
+    prophet_preds = forecast['yhat'].iloc[-holdout_weeks:].values
+    actual_vals = actual['y'].values
+
+    # Naive baseline: mean of last 8 weeks of training data
+    baseline_val = train['y'].tail(8).mean()
+    baseline_preds = np.array([baseline_val] * holdout_weeks)
+
+    # Metrics
+    def mae(preds, actuals):
+        return float(np.mean(np.abs(preds - actuals)))
+
+    def mape(preds, actuals):
+        mask = actuals != 0
+        return float(np.mean(np.abs((actuals[mask] - preds[mask]) / actuals[mask])) * 100)
+
+    prophet_mae = mae(prophet_preds, actual_vals)
+    baseline_mae = mae(baseline_preds, actual_vals)
+    prophet_mape = mape(prophet_preds, actual_vals)
+    baseline_mape = mape(baseline_preds, actual_vals)
+    improvement = ((baseline_mae - prophet_mae) / baseline_mae * 100) if baseline_mae > 0 else 0
+
+    # Build comparison chart data
+    comparison = []
+    for i, row in enumerate(actual.itertuples()):
+        comparison.append({
+            "date": row.ds.strftime('%Y-%m-%d'),
+            "Actual": round(float(row.y), 2),
+            "Prophet": round(float(prophet_preds[i]), 2),
+            "Baseline": round(float(baseline_val), 2),
+        })
+
+    return {
+        "available": True,
+        "holdout_weeks": holdout_weeks,
+        "prophet_mae": round(prophet_mae, 2),
+        "baseline_mae": round(baseline_mae, 2),
+        "prophet_mape": round(prophet_mape, 2),
+        "baseline_mape": round(baseline_mape, 2),
+        "improvement_pct": round(improvement, 1),
+        "prophet_wins": prophet_mae < baseline_mae,
+        "comparison": comparison
+    }

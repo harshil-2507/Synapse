@@ -36,3 +36,16 @@ export interface ForecastResponse {
   summary: string;
   confidence: Confidence;
 }
+
+export interface ValidationResult {
+  available: boolean;
+  reason?: string;
+  holdout_weeks?: number;
+  prophet_mae?: number;
+  baseline_mae?: number;
+  prophet_mape?: number;
+  baseline_mape?: number;
+  improvement_pct?: number;
+  prophet_wins?: boolean;
+  comparison?: { date: string; Actual: number; Prophet: number; Baseline: number }[];
+}

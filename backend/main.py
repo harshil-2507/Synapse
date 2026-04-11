@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
 from data_loader import load_walmart, load_uploaded
-from forecaster import run_forecast, compute_confidence 
+from forecaster import run_forecast, compute_confidence, run_holdout_validation
 from anomaly import detect_anomalies
 from scenarios import run_scenario
 from explainer import explain_forecast, explain_anomaly
@@ -75,6 +75,24 @@ def anomaly_explain(date: str, value: float, expected: float, direction: str, de
     anomaly = {"date": date, "value": value, "expected": expected, "direction": direction, "deviation_pct": deviation_pct}
     return {"explanation": explain_anomaly(anomaly)}
 
+
+@app.get("/api/validate")
+def validate(periods: int = Query(8)):
+    df = load_walmart(WALMART_PATH)
+    return run_holdout_validation(df, holdout_weeks=periods)
+
+@app.post("/api/validate")
+async def validate_upload(file: UploadFile = File(...), periods: int = Query(8)):
+    try:
+        contents = await file.read()
+        df = load_uploaded(contents.decode("utf-8"))
+        return run_holdout_validation(df, holdout_weeks=periods)
+    except Exception as e:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=500, detail=str(e))
+    
+
+    
 @app.get("/health")
 def health():
     return {"status": "ok"}
