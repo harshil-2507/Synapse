@@ -6,6 +6,7 @@ from pydantic import BaseModel
 from typing import List
 from dotenv import load_dotenv
 
+from stock_model import predict_next
 from data_loader import load_walmart, load_uploaded
 from forecaster import run_forecast, compute_confidence, run_holdout_validation
 from anomaly import detect_anomalies
@@ -28,6 +29,16 @@ app.add_middleware(
 
 WALMART_PATH = "../data/walmart.csv"
 GEO_PATH = "../data/geo_conflict.csv"
+
+class StockInsightRequest(BaseModel):
+    ticker: str
+    company_name: str
+    current_price: float
+    predicted_price: float
+    pct_change: float
+    trend: str
+    geo_risk_score: float = 50  # optional integration later
+    key_regions: list = []      # optional: ["Middle East", "China"]
 
 
 # ── Forecast ──────────────────────────────────────────────────────────────────
@@ -53,6 +64,7 @@ async def upload_forecast(file: UploadFile = File(...), periods: int = Query(8))
         confidence = compute_confidence(df, forecast)
         return {"forecast": forecast, "anomalies": anomalies, "summary": summary, "confidence": confidence}
     except ValueError as e:
+        print(f"ValueError: {str(e)}")
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Processing failed: {str(e)}")
@@ -206,16 +218,18 @@ Highest risk exposure: {body.top_risk_region}
 Geographic Revenue Exposure Breakdown:
 {exposure_lines}
 
-Write exactly 3 sentences in plain English for a non-technical SME business owner or bank relationship manager.
+Write exactly 5 sentences in plain English for a non-technical SME business owner or bank relationship manager of company {body.company_name}.
 Sentence 1: Describe the company's overall geopolitical risk posture based on the exposure breakdown.
-Sentence 2: Explain what the estimated revenue impact means in practical terms.
-Sentence 3: Give one specific, actionable recommendation.
+Sentence 2: If the company has high exposure to any high-risk regions, briefly explain why those regions are risky (e.g. conflict, sanctions, instability) and what specific risks they pose to the company's operations.
+Sentence 3: Explain what the estimated revenue impact means in practical terms.
+Sentence 4: Give 2-3 specific, actionable recommendations for how the company could mitigate these risks and recommend alternative markets or diversification strategies if relevant.
+Sentence 5: Recommend how to implement the recommendations, along with any relevant NatWest products or services that could help.
 Be direct. No jargon. No bullet points."""
 
         res = client.chat.completions.create(
             model="llama-3.3-70b-versatile",
             messages=[{"role": "user", "content": prompt}],
-            max_tokens=200,
+            max_tokens=250,
         )
         return {"briefing": res.choices[0].message.content.strip()}
     except Exception as e:
@@ -227,3 +241,49 @@ Be direct. No jargon. No bullet points."""
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+# stock
+
+@app.get("/api/stock")
+def stock_prediction(ticker: str):
+    return predict_next(ticker)
+
+@app.post("/api/stock/insights")
+def stock_insights(body: StockInsightRequest):
+    """
+    Institutional-grade AI stock insight (aligned with geo-risk engine).
+    """
+    try:
+        from explainer import client
+
+        regions_text = ", ".join(body.key_regions) if body.key_regions else "global markets"
+
+        prompt = f"""You are a senior equity strategist at a Natwest Bank.
+
+Stock: {body.company_name} ({body.ticker})
+Current Price: {body.current_price}
+Predicted Price: {body.predicted_price}
+Predicted Change: {body.pct_change:.2f}% ({body.trend})
+Geopolitical Risk Score: {body.geo_risk_score}/100
+Key Risk Regions: {regions_text}
+
+Write exactly 5 sentences in plain English for an informed retail investor or portfolio manager.
+
+Sentence 1: Describe the stock’s short-term outlook based on the prediction and trend direction.
+Sentence 2: Explain the main drivers behind the prediction, including technical signals (momentum, moving averages) and market behavior.
+Sentence 3: If geopolitical risks are relevant, explain how conflicts, sanctions, or instability in the key regions could impact this stock.
+Sentence 4: Translate the predicted percentage change into practical investor impact (profit/loss implication).
+Sentence 5: Give 2-3 actionable recommendations (buy/hold/reduce/hedge/diversify) and how to implement them.
+
+Be direct. No jargon. No bullet points."""
+
+        res = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=250,
+        )
+
+        return {"insight": res.choices[0].message.content.strip()}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

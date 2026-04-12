@@ -4,7 +4,9 @@ pandas
 numpy
 prophet
 scikit-learn
+xgboost
 groq
 google-generativeai
 python-dotenv
+yfinance
 python-multipart
