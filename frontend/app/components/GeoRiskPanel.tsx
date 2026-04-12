@@ -49,10 +49,30 @@ interface Props {
 }
 
 const PRESET_REGIONS = [
-  "China", "Russia", "Ukraine", "India", "USA", "Iran",
-  "Germany", "France", "Brazil", "Saudi Arabia", "Turkey",
-  "Pakistan", "Israel", "South Korea", "Japan", "Mexico",
-  "Nigeria", "Egypt", "Indonesia", "Poland",
+  // Major global economies (Top GDP powers)
+  "USA", "China", "India", "Japan", "Germany", "UK", "France",
+  "Italy", "Canada", "Brazil", "Russia",
+
+  // Asia-Pacific economic + strategic hubs
+  "South Korea", "Indonesia", "Australia", "Vietnam", "Thailand",
+  "Philippines", "Malaysia", "Singapore",
+
+  // Middle East / energy + geopolitical risk zones
+  "Saudi Arabia", "UAE", "Iran", "Iraq", "Israel", "Qatar",
+  "Turkey", "Yemen",
+
+  // Europe (economic + geopolitical exposure)
+  "Spain", "Poland", "Netherlands", "Ukraine", "Sweden",
+  "Switzerland", "Belgium",
+
+  // Africa (growth + instability regions)
+  "Nigeria", "Egypt", "Sudan", "South Africa", "Ethiopia", "Kenya",
+
+  // Americas (economic + trade exposure)
+  "Mexico", "Argentina", "Colombia",
+
+  // High-conflict / strategic tension zones
+  "Pakistan", "Afghanistan", "Syria", "Myanmar"
 ];
 
 let nextId = 1;
