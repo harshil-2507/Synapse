@@ -49,3 +49,24 @@ export interface ValidationResult {
   prophet_wins?: boolean;
   comparison?: { date: string; Actual: number; Prophet: number; Baseline: number }[];
 }
+
+export interface GeoRisk {
+  available: boolean;
+  country: string;
+  year: number;
+  score: number;
+  label: string;
+  color: string;
+  bg: string;
+  breakdown: {
+    conflict_intensity: number;
+    political_instability: number;
+    economic_weakness: number;
+    inflation_pressure: number;
+  };
+  estimated_revenue_impact_pct: number;
+  conflict_intensity: number;
+  gdp_growth: number;
+  inflation_rate: number;
+  political_stability: number;
+}

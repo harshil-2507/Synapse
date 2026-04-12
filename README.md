@@ -1,35 +1,88 @@
-# ForecastIQ — AI Predictive Forecasting
+# Synapse — AI Revenue Forecasting for SMEs
 
-ForecastIQ turns any business time series into honest, explainable forecasts — built for non-technical decision makers. Upload a CSV of historical data and instantly receive a forecast with uncertainty bands, anomaly detection with AI explanations, and a scenario simulator to test what-if growth assumptions.
+> Built for NatWest Code for Purpose 2026
 
-**Intended users:** Business analysts, operations teams, and product managers who need to look ahead without relying on data science expertise.
+Synapse gives SME finance teams a 12-week revenue forecast with 
+confidence intervals, anomaly alerts, and plain-English AI explanations 
+— in under 60 seconds, no data science expertise required.
 
 ---
 
-## Features
+## The Problem
 
-- **Forecasting with confidence bands** — Prophet model generates weekly predictions with upper/lower uncertainty ranges (not just a single number)
-- **Naive baseline comparison** — Rolling mean baseline rendered alongside Prophet forecast to guard against over-fitting
-- **Anomaly detection** — Z-score detection flags unexpected spikes and dips with severity scores and visual markers
-- **AI plain-English explanations** — Groq (Llama 3.3) generates 2–3 sentence summaries for both overall forecasts and individual anomalies, readable by non-experts
-- **Scenario simulator** — Adjust growth rate (±30%) and toggle outlier removal to compare forecasts side-by-side
-- **CSV upload** — Works on any time series CSV with a date column and a numeric value column (auto-detects columns, resamples to weekly)
-- **Pre-loaded Walmart demo** — Retail sales dataset loads on startup for immediate judge evaluation
+Small and medium businesses are flying blind.
+
+They make inventory decisions, hiring plans, and loan applications 
+based on gut feel — because professional forecasting tools cost 
+thousands, require data scientists, and return outputs no non-technical 
+person can interpret.
+
+**The result:** SMEs over-order stock, under-prepare for demand drops, 
+and miss early warning signs hidden in their own sales data.
+
+NatWest serves over 1 million SME customers. Every one of them has 
+historical transaction data. None of them have a forecasting team.
+
+---
+
+## The Solution
+
+Upload a weekly sales or revenue CSV. In under 60 seconds, Synapse 
+returns:
+
+- A **12-week forecast** with upper/lower confidence bands — not just 
+  a single number, but an honest range
+- A **naive baseline comparison** that proves the model isn't 
+  overfitting
+- **Anomaly detection** that flags unusual spikes and dips with 
+  Z-scores and AI explanations in plain English
+- A **scenario simulator** — "what happens to my revenue if growth 
+  drops 15%?"
+- A **model confidence score** — so the business owner knows when to 
+  trust the forecast and when to be cautious
+- **Hold-out validation** — the model proves its own accuracy against 
+  real held-out data before you act on it
+
+Everything is explainable. Everything is readable by a non-technical 
+business owner or bank relationship manager.
+
+---
+
+## Who This Is For
+
+| User | How they use Synapse |
+|---|---|
+| SME owner | Upload monthly sales CSV, get 12-week revenue outlook before applying for a NatWest business loan |
+| NatWest relationship manager | Run a client's data through Synapse in a meeting to demonstrate cash flow risk |
+| Finance analyst | Validate Prophet forecast accuracy vs naive baseline before presenting to board |
+| Operations manager | Detect anomalies in weekly demand data before they become stockouts |
+
+---
+
+## How It Maps to the Problem Statement
+
+| Judging Criterion | How Synapse Delivers |
+|---|---|
+| Predict likely values for future periods | Prophet model generates weekly yhat values for 4–26 weeks ahead |
+| Show a range of outcomes, not just a single number | Shaded confidence band (yhat_lower / yhat_upper) visible on every chart |
+| Compare to a simple baseline to avoid overfitting | Rolling mean naive baseline rendered alongside Prophet on the same chart |
+| Detect early warning signs | Z-score anomaly detection flags spikes and dips with severity and date |
+| Explanations short enough for non-experts | Groq Llama 3.3 generates 2–3 sentence plain-English summaries per forecast and per anomaly |
 
 ---
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Forecasting | Facebook Prophet |
-| Baseline | Rolling mean (naive) |
-| Anomaly Detection | Z-score on rolling window |
-| AI Explainer | Groq API — Llama 3.3 70B (free tier) |
-| Backend | FastAPI + Uvicorn |
-| Frontend | Next.js 14 + Tailwind CSS |
-| Charts | Recharts |
-| Language | Python 3.10, TypeScript |
+| Layer | Technology | Why |
+|---|---|---|
+| Forecasting | Facebook Prophet | Handles seasonality, missing data, and trend shifts — ideal for SME sales patterns |
+| Baseline | Rolling mean (naive) | Industry-standard benchmark; guards against overfitting |
+| Anomaly Detection | Z-score on rolling window | Interpretable, fast, no black box |
+| AI Explainer | Groq API — Llama 3.3 70B | Free tier, sub-second latency, plain-English output |
+| Backend | FastAPI + Uvicorn | Lightweight, async, production-ready |
+| Frontend | Next.js 14 + Tailwind CSS | Fast, responsive, modern |
+| Charts | Recharts | Composable, customisable confidence band support |
+| Language | Python 3.10, TypeScript | |
 
 ---
 
@@ -38,94 +91,116 @@ ForecastIQ turns any business time series into honest, explainable forecasts —
 ### Prerequisites
 - Python 3.10+
 - Node.js 18+
-- A free Groq API key from https://console.groq.com
+- Free Groq API key from https://console.groq.com
 
-### 1. Clone the repository
+### 1. Clone
 ```bash
-git clone <your-repo-url>
-cd forecastiq
+git clone https://github.com/harshil-2507/Synapse
+cd Synapse
 ```
 
-### 2. Backend setup
+### 2. Backend
 ```bash
 cd backend
 pip install -r requirements.txt
 cp .env.example .env
-# Edit .env and paste your GROQ_API_KEY
-```
-
-Download the Walmart dataset from https://www.kaggle.com/datasets/yasserh/walmart-dataset
-Rename to `walmart.csv` and place it at `forecastiq/data/walmart.csv`
-
-Start the backend:
-```bash
+# Add your GROQ_API_KEY to .env
 uvicorn main:app --reload
 ```
 
-### 3. Frontend setup
+Download the demo dataset from 
+https://www.kaggle.com/datasets/yasserh/walmart-dataset  
+Rename to `walmart.csv` and place at `data/walmart.csv`
+
+### 3. Frontend
 ```bash
-cd ../frontend
+cd frontend
 npm install
 npm run dev
 ```
 
-Open http://localhost:3000 — the Walmart demo loads automatically.
+Open http://localhost:3000 — the demo loads automatically.
 
 ---
 
-## Usage
+## Using Synapse
 
-**Load demo:** Click "Load Walmart Demo" (auto-loads on start)  
-**Upload your data:** Click "Upload CSV" — any CSV with a date column and numeric value column  
-**View forecast:** Forecast tab shows Prophet prediction + confidence bands + baseline  
-**Detect anomalies:** Anomalies tab lists all flagged spikes/dips — click any to get an AI explanation  
-**Run scenarios:** Scenario tab → adjust growth rate slider → click "Run Scenario"
+**Demo mode:** Loads Walmart weekly retail sales data automatically  
+**Your data:** Click "Ingest Dataset (CSV)" — any CSV with a date 
+column and a numeric value column  
 
-### API endpoints
+**Forecast tab** — Prophet prediction with confidence bands and naive 
+baseline  
+**Anomalies tab** — All flagged spikes/dips, click any for AI 
+explanation  
+**Scenario tab** — Adjust growth rate ±30%, compare against baseline  
+**Validate tab** — Hold-out accuracy proof: Prophet MAE vs Baseline MAE  
 
-GET  /api/default?periods=8          # Walmart demo forecast
-POST /api/upload?periods=8           # Upload CSV forecast
-GET  /api/scenario?growth_rate=10    # Scenario with default data
-POST /api/scenario?growth_rate=10    # Scenario with uploaded CSV
-GET  /api/anomaly/explain            # AI explanation for anomaly
-GET  /health                         # Health check
+---
+
+## API Reference
+GET  /api/default?periods=8        # Demo forecast
+POST /api/upload?periods=8         # Upload CSV forecast
+GET  /api/scenario?growth_rate=10  # Scenario (demo data)
+POST /api/scenario?growth_rate=10  # Scenario (uploaded CSV)
+GET  /api/anomaly/explain          # AI explanation for anomaly
+GET  /api/validate?periods=8       # Hold-out validation (demo)
+POST /api/validate?periods=8       # Hold-out validation (uploaded)
+GET  /health                       # Health check
 
 
 ---
 
 ## Architecture
-
-Browser (Next.js)
+Browser (Next.js 14)
 │
-├── ForecastChart.tsx   — Recharts confidence band visualisation
-├── AnomalyList.tsx     — Anomaly feed + AI explanation panel
-├── ScenarioPanel.tsx   — Slider UI + side-by-side chart
-├── SummaryCard.tsx     — Groq AI summary display
-└── StatsRow.tsx        — Key metrics overview
+├── page.tsx              — Dashboard orchestrator
+├── ForecastChart.tsx     — Recharts confidence band chart
+├── AnomalyList.tsx       — Anomaly feed + AI explanation panel
+├── ScenarioPanel.tsx     — Growth simulator + comparison chart
+├── SummaryCard.tsx       — Groq AI summary with animated reveal
+├── ConfidenceCard.tsx    — Model confidence gauge + progress bar
+└── ValidationPanel.tsx   — Hold-out accuracy comparison
 │
-▼
-FastAPI Backend
+▼ HTTP (FastAPI)
 │
-├── forecaster.py       — Prophet model + naive baseline
-├── anomaly.py          — Z-score detection
-├── scenarios.py        — What-if growth simulation
-├── explainer.py        — Groq API calls
-└── data_loader.py      — CSV parsing + weekly resampling
-
+├── main.py           — Route definitions
+├── forecaster.py     — Prophet model + naive baseline + confidence scoring
+├── anomaly.py        — Z-score detection engine
+├── scenarios.py      — What-if growth simulation
+├── explainer.py      — Groq API integration
+└── data_loader.py    — CSV parsing + weekly resampling
 
 
 ---
 
 ## Limitations
 
-- Groq free tier rate limits may delay AI summaries briefly; forecast data always returns immediately
-- Prophet requires at least 2 full seasonal cycles for optimal accuracy; sparse data produces wider confidence bands
-- CSV upload auto-detects date/value columns by keyword matching — very unusual column names may need manual renaming to `date` and `value`
+- Groq free tier rate limits may delay AI summaries by 1–2 seconds; 
+  forecast data always returns immediately
+- Prophet needs at least 2 full seasonal cycles for best accuracy; 
+  sparse data produces wider confidence bands
+- CSV auto-detects date/value columns by keyword — very unusual column 
+  names may need renaming to `date` and `value`
 
 ---
 
-## Future Improvements
+## Future Roadmap
 
-- Email/Slack alerts when anomalies exceed a configurable threshold
-- Multi-series forecasting (compare multiple products or regions)
-- Model confidence score displayed per forecast based on data quality
+- **NatWest integration** — Direct feed from NatWest business account 
+  transaction data, no CSV upload needed
+- **Multi-series** — Compare multiple product lines or store locations 
+  on one chart
+- **Threshold alerts** — Email/SMS when anomaly Z-score exceeds 
+  configurable limit
+- **Loan readiness score** — Combine forecast trend + confidence score 
+  into a single SME creditworthiness signal for NatWest relationship 
+  managers
+
+---
+
+## Team
+
+Built for NatWest Code for Purpose 2026 — 2-person team, 
+built overnight.
+
