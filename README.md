@@ -1,12 +1,12 @@
 # Synapse — Geopolitical Risk & AI Revenue Forecasting for SMEs
 
-> 🏆 Built for NatWest Code for Purpose 2026 · Hackathon Project
+>  Built for NatWest Code for Purpose 2026 · Hackathon Project
 
 Synapse gives SME finance teams and NatWest relationship managers a firm-level geopolitical risk score, a lag-adjusted stressed revenue forecast, and plain-English AI explanations — in under 60 seconds.
 
 ---
 
-## 🌪️ The Core Problem
+##  The Core Problem
 
 Financial markets are increasingly shaped by geopolitical events — conflicts, political instability, trade disruptions. But the way this actually hurts a company is not random. It travels through a very specific path:
 
@@ -28,7 +28,7 @@ This gap is what Synapse fills.
 
 ---
 
-## 🎯 The Insight Nobody Else Is Using
+##  The Insight Nobody Else Is Using
 
 **Geographic revenue exposure % is the transmission mechanism between a geopolitical event and firm-level financial impact.**
 
@@ -44,7 +44,7 @@ Stress-Adjusted Forecast = Baseline Forecast × (1 - Firm Risk Score × Sensitiv
 
 ---
 
-## 👥 Who Feels This Pain
+##  Who Feels This Pain
 
 | User | The Pain | How Synapse Helps |
 |---|---|---|
@@ -54,7 +54,7 @@ Stress-Adjusted Forecast = Baseline Forecast × (1 - Firm Risk Score × Sensitiv
 
 ---
 
-## 🚀 What Synapse Actually Does — Feature by Feature
+##  What Synapse Actually Does — Feature by Feature
 
 ### Feature 1 — Revenue Forecast Engine
 - Upload a weekly sales CSV → Facebook Prophet generates a 4–26 week forward forecast
@@ -99,7 +99,7 @@ Stress-Adjusted Forecast = Baseline Forecast × (1 - Firm Risk Score × Sensitiv
 
 ---
 
-## 🏗️ Architecture & How We Built It
+##  Architecture & How We Built It
 
 ### High-Level Data Flow
 
@@ -142,7 +142,7 @@ Stress-Adjusted Forecast = Baseline Forecast × (1 - Firm Risk Score × Sensitiv
 │                    Next.js 14 Frontend (TypeScript)                   │
 │                                                                      │
 │  page.tsx — Main dashboard orchestrator with 4 tabs:                 │
-│    🌍 Overview    │  📈 Prediction Flows  │  ⚠️ Geo Risk  │  📊 Stocks │
+│     Overview    │   Prediction Flows  │   Geo Risk  │   Stocks │
 │                                                                      │
 │  Built-in Widgets (page.tsx):                                        │
 │    • GlobalHeatmap       — 8-region live risk index grid             │
@@ -242,7 +242,7 @@ The largest and most complex component. Handles the full geo risk workflow:
 
 ---
 
-## ⚖️ Why This Wins Against Other Teams
+##  Why This Wins Against Other Teams
 
 | What other teams build | What Synapse builds |
 |---|---|
@@ -254,7 +254,7 @@ The largest and most complex component. Handles the full geo risk workflow:
 
 ---
 
-## 🏦 The NatWest Fit
+##  The NatWest Fit
 
 1. **Portfolio Risk** — Gives NatWest a firm-level geopolitical risk score to aggregate a real stress testing tool across SME/corporate portfolios.
 2. **Regional Exposure** — Revenue exposure mappings directly align with how NatWest evaluates geographic concentration risk in their loan book.
@@ -262,7 +262,7 @@ The largest and most complex component. Handles the full geo risk workflow:
 
 ---
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 | Layer | Technology | Reason |
 |---|---|---|
@@ -278,7 +278,7 @@ The largest and most complex component. Handles the full geo risk workflow:
 
 ---
 
-## 📊 Datasets
+##  Datasets
 
 | Dataset | What It Provides | How Synapse Uses It |
 |---|---|---|
@@ -288,7 +288,7 @@ The largest and most complex component. Handles the full geo risk workflow:
 
 ---
 
-## ⚙️ Install and Run
+##  Install and Run
 
 ### Prerequisites
 - Python 3.10+
@@ -358,7 +358,7 @@ GET  /health                         # Health check
 
 ---
 
-## ⚠️ Limitations
+##  Limitations
 
 - Groq free tier rate limits may delay AI summaries by 1–2 seconds; forecast data always returns immediately
 - Prophet needs at least 2 full seasonal cycles for best accuracy; sparse data produces wider confidence bands
@@ -367,7 +367,7 @@ GET  /health                         # Health check
 
 ---
 
-## 🗺️ Future Roadmap
+##  Future Roadmap
 
 - **NatWest integration** — Direct feed from NatWest business account transaction data, no CSV upload needed
 - **Multi-series** — Compare multiple product lines or store locations on one chart
@@ -378,6 +378,6 @@ GET  /health                         # Health check
 
 ---
 
-## 🧑‍💻 Team
+##  Team
 
 Built for **NatWest Code for Purpose 2026** — hackathon project, built overnight.
